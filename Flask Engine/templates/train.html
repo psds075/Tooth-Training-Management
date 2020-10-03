@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>AIQUB AI MANAGEMENT</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../static/css/imageviewer.css" type="text/css" />
+<link rel="stylesheet" href="../static/css/style.css" type="text/css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft" type="text/css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="../static/js/jquery-1.11.3.min.js"></script>
+<script src="../static/js/imageviewer.js"></script>
+<script src="../static/js/bbox_annotator.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.5/TweenMax.min.js'></script>
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+
+<style>
+  /* Style the search box */
+  #mySearch {
+    width: 100%;
+    font-size: 15px;
+    padding: 5px;
+    border: 1px solid #ddd;
+  }
+
+  /* Center the loader */
+  #loading_icon {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 30px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 30px solid #001f3f;
+    width: 300px;
+    height: 300px;
+    -webkit-animation: spin 1.5s linear infinite;
+    animation: spin 1.5s linear infinite;
+  }
+
+  /* Center the loader */
+  #loading_statistics {
+    position: relative;
+    left: 45%;
+    top: 30%;
+    z-index: 1;
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+    border: 30px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 30px solid #001f3f;
+    width: 200px;
+    height: 200px;
+    -webkit-animation: spin 1.5s linear infinite;
+    animation: spin 1.5s linear infinite;
+  }
+
+  @-webkit-keyframes spin {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
+<body>
+  <!-- Side Navigation -->
+  <nav class="w3-sidebar w3-bar-block w3-collapse w3-animate-left w3-card" id="mySidebar">
+    <a href="/logout" class="w3-bar-item w3-button w3-large" id="mySidebar2">
+      <img src="../static/src/AI MANAGEMENT LOGO.png" width=100%>
+    </a>
+    <div>
+      <div class="w3-dropdown-click" style='width:31%'>
+        <button onclick="SHOW_DATASET()" class="w3-button w3-black w3-round-small">DATASET</button>
+        <div id="DATASET_MENU" class="w3-dropdown-content w3-bar-block w3-border w3-animate-opacity"
+          style="overflow-y:scroll;height:400px;">
+          {% for dataset in traininglist %}
+          <a href="#" class="w3-bar-item w3-button"
+            onclick="SHOW_DATASET();SELECT_DATASET('{{dataset['NAME']}}');">{{dataset['NAME']}}</a>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="w3-dropdown-click" style='width:31%'>
+        <button onclick="SHOW_ARCHIVE()" class="w3-button w3-black w3-round-small">ARCHIVE</button>
+        <div id="ARCHIVE_MENU" class="w3-dropdown-content w3-bar-block w3-border w3-animate-opacity"
+          style="overflow-y:scroll;height:400px;">
+          {% for archive in archivelist %}
+          <a href="#" class="w3-bar-item w3-button"
+            onclick="SHOW_ARCHIVE();SELECT_ARCHIVE('{{archive['DATASET_NAME']}}');">{{archive['DATASET_NAME']}}</a>
+          {% endfor %}
+        </div>
+      </div>
+      <button onclick='window.location.href = "/comment";' class="w3-button w3-black" style='width:33%'>COMMENT</button>
+    </div>
+
+    <div class="w3-bar w3-black">
+      <button class="w3-button" id="UNCONFIRM_TAB" onclick="openTab('UNCONFIRM')">UNCONFIRM</button>
+      <button class="w3-button" id="CONFIRM_TAB" onclick="openTab('CONFIRM')">CONFIRM</button>
+      <button class="w3-button w3-grey" id="ALL_TAB" onclick="openTab('ALL')">ALL</button>
+    </div>
+
+    <input type="text" id="mySearch" onkeyup="searchFilter()" placeholder="Search.." title="Type in a category">
+
+    <div id="Demo1" class="w3-animate-left">
+      {% for image in imagelist %}
+      <div class="{{'READ' if image['READ'] else 'UNREAD'}} {{'CONFIRM' if image['CONFIRM'] else 'UNCONFIRM'}} ARTICLE_LIST" id="{{image['FILENAME'][:-4]}}"
+        text="{{image['FILENAME']}}" style="padding:0px;">
+        <a href="javascript:void(0)" class="w3-bar-item w3-button test w3-hover-dark-grey"
+          onclick="openImage('{{image['FILENAME']}}')" class="img_name" style="padding-right:0px;">
+          <div class="w3-container" style='padding:0px'>
+            <div class="w3-opacity" id="xray"><img src=/thumb/{{LISTNAME}}/{{image['FILENAME']}}
+                style='height:65px;width:130px;'>
+            </div>
+            <div class="w3-opacity" id="xray_exp" style='font-size:12px;margin-top:5px;'>
+              <i class='fas fa-copy w3-margin-right w3-text-blue'></i>{{image['FILENAME'][0:14]}}
+              <br>
+              <i class='far fa-hospital w3-margin-right w3-text-blue'></i>{{image['HOSPITAL']}}
+              <br>
+              <i class='fas fa-smile w3-margin-right w3-text-blue'></i>{{image['NAME']}}
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    <div class=center>
+      <button id=TRAINING_BUTTON class=below_btn onclick="TRAINING_BUTTON_CONTROL();" style='display:;'>START
+        TRAINING</button>
+      <button id=PROGRESSING_BUTTON class=below_btn onclick="PROGRESSING_BUTTON_CONTROL();" style='display:none;'>
+        <i class="fa fa-spinner fa-spin"></i>
+        PROGRESSING
+        <div class="w3-light-grey" style='float:inline-end'>
+          <div class="w3-blue" style="height:3px;width:{{training_percent}}%;float:inline-end"></div>
+        </div>
+      </button>
+      <button class=below_btn onclick="SUMMARY_BUTTON_CONTROL();">STATISTICS
+        SUMMARY</button>
+    </div>
+  </nav>
+
+  <!-- Main Page -->
+  <div class="w3-main" id="page">
+    <div id="page1" class="w3-container person" style='margin-left:300px;'>
+      <div id="loading_icon" style='display:none'></div>
+      <div id="main_img" style='display:none'>
+        <div id="bbox_annotator" style="display:inline-block;"></div>
+      </div>
+      <div id="unlabeled_img" style='display:none'>
+        <img src="" id=img3 width=60%>
+      </div>
+      <div id="main_input" width=60% style='display:none;overflow-y:scroll;height:250px'>
+        <br>
+        <p id='TMJ_RADIOBUTTON' class='w3-text-white'>
+          TMJ DISORDER RIGHT :
+          <button id=TMJ_RIGHT_NORMAL_BUTTON class="w3-button w3-grey w3-hover-black w3-padding-small">Normal</button>
+          <button id=TMJ_RIGHT_ABNORMAL_BUTTON class="w3-button w3-grey w3-hover-red w3-padding-small">Abnormal</button>
+        </p>
+        <p id='TMJ_RADIOBUTTON' class='w3-text-white'>
+          TMJ DISORDER LEFT :
+          <button id=TMJ_LEFT_NORMAL_BUTTON class="w3-button w3-grey w3-hover-black w3-padding-small">Normal</button>
+          <button id=TMJ_LEFT_ABNORMAL_BUTTON class="w3-button w3-grey w3-hover-red w3-padding-small">Abnormal</button>
+        </p>
+        <p id='OSTEOPOROSIS_RADIOBUTTON' class=w3-text-white>
+          OSTEOPOROSIS :
+          <button id=OSTEOPOROSIS_NORMAL_BUTTON
+            class="w3-button w3-grey w3-hover-black w3-padding-small">Normal</button>
+          <button id=OSTEOPOROSIS_ABNORMAL_BUTTON
+            class="w3-button w3-grey w3-hover-red w3-padding-small">Abnormal</button>
+        </p>
+        <br>
+        <p>
+          <button class="w3-button w3-grey w3-hover-black" id="CONFIRM_BUTTON">CONFIRM</button>
+          <button class="w3-button w3-red w3-hover-grey w3-right" style="margin-right:650px"
+            id="DELETE_BUTTON">DELETE</button>
+        </p>
+      </div>
+      <div id="annotation_data" name="annotation" rows="30" cols="50" style="display:none"></div>
+      <div>
+        <div class="width100">
+          <div class="slidecontainer">
+            <div id="right_box1" style='text-align:left'>
+              <div id="right_box2">
+                <button id='PREDICTION_BUTTON'
+                  class="w3-button w3-grey w3-hover-grey w3-padding-small">PREDICTION</button>
+                <button id='RESET_BUTTON' class="w3-button w3-blue w3-hover-grey w3-padding-small">RESET</button>
+              </div>
+              <div class=''>
+                <div id="right_box4">Brightness</div>
+                <div id='brightness' style='padding-left:20px'>
+                  <input type="range" step="1" min="0" max="100" class="slider" id="myRange">
+                </div>
+              </div>
+              <div class=''>
+                <div id="right_box4">Contrast</div>
+                <div id='contrast' style='padding-left:20px'>
+                  <input type="range" step="1" min="0" max="100" class="slider" id="contraRange">
+                </div>
+              </div>
+              <div id="right_box6">
+                <div class=text_left id="prdiction">Prediction</div>
+                <div class="text_left f_gray">TMJ RIGHT<b id=TMJ_LEFT_SCORE></b></div>
+                <div class="w3-grey">
+                  <div id="GA_bar" class="w3-container w3-green w3-center" style="width:100%;height:4px;"></div>
+                </div>
+                <div class="text_left f_gray">TMJ LEFT<b id=TMJ_RIGHT_SCORE></b></div>
+                <div class="w3-grey">
+                  <div id="GA_bar" class="w3-container w3-green w3-center" style="width:100%;height:4px;"></div>
+                </div>
+                <div class="text_left f_gray">OSTEOPOROSIS<b id=OSTEOPOROSIS_SCORE></b></div>
+                <div class="w3-grey">
+                  <div id="GA_bar" class="w3-container w3-green w3-center" style="width:100%;height:4px;"></div>
+                </div>
+              </div>
+              <br>
+              <div id="right_box7" style='text-align:center' class='w3-white'>
+                <span id="comments">Comments</span>
+                <a href="javascript:void(0)" onclick="document.getElementById('id02').style.display='block'"
+                  id="insert_btn">INSERT</a>
+              </div>
+              <div id="comment_box" style="height:calc(100% - 500px);overflow-y:scroll;width:100%;">
+                <div id='COMMENT_TEXT' style="font-weight:lighter;"></div>
+              </div>
+              <div id="CMD_WINDOW" class="w3-panel w3-leftbar w3-dark-grey"
+                style='text-align:left;border: 0px solid black;margin:0px;height:100px;overflow-y:scroll;'>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal INSERT IMAGE -->
+  <div id="id01" class="w3-modal" style="z-index:5">
+    <div class="w3-modal-content w3-animate-zoom">
+      <div class="w3-container w3-padding w3-blue-grey">
+        <span onclick="document.getElementById('id01').style.display='none'"
+          class="w3-button w3-blue-grey w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
+        <h2 class="w3-blue-grey">Insert New Image</h2>
+      </div>
+      <div class="w3-panel">
+        <label style="border:0px solid red;">Image Lists</label>
+        <form id="FILE_FORM" method="post" enctype="multipart/form-data" action="" style="border:0px solid red;">
+          <input type="file" class="w3-input w3-border w3-margin-bottom" id="FILE_TAG" name="FILE_TAG"
+            style="border:5px solid blue;" multiple>
+          <br>
+        </form>
+        <div class="w3-section" style="border:0px solid red;">
+          <a class="w3-button w3-blue-grey" onclick="document.getElementById('id01').style.display='none'">Cancel
+             <i class="fa fa-remove"></i></a>
+          <a class="w3-button w3-light-grey w3-right"
+            onclick="uploadFile();document.getElementById('id01').style.display='none'">Select  <i
+              class="fa fa-paper-plane"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal COMMENT -->
+  <div id="id02" class="w3-modal" style="z-index:5">
+    <div class="w3-modal-content w3-animate-zoom">
+      <div class="w3-container w3-padding w3-blue-grey">
+        <span onclick="document.getElementById('id02').style.display='none'"
+          class="w3-button w3-blue-grey w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
+        <h2 class="w3-blue-grey">Insert Comment</h2>
+      </div>
+      <div class="w3-panel">
+        <textarea id="TEXT_AREA" style='width:100%;height:200px;'></textarea>
+        <div class="w3-section">
+          <a class="w3-button w3-blue-grey" onclick="document.getElementById('id02').style.display='none'">Cancel
+             <i class="fa fa-remove"></i></a>
+          <a id='WRITE_BUTTON' class="w3-button w3-light-grey w3-right"
+            onclick="document.getElementById('id02').style.display='none'" ;>Write  <i
+              class="fa fa-paper-plane"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal STATISTICS SUMMARY -->
+  <div id="id03" class="w3-modal" style="z-index:5">
+    <div class="w3-modal-content w3-animate-zoom" style="height:70%;">
+      <div class="w3-container w3-padding w3-blue-grey">
+        <span onclick="document.getElementById('id03').style.display='none'"
+          class="w3-button w3-blue-grey w3-right w3-xxlarge"><i class="fa fa-remove"></i></span>
+        <h2 class="w3-blue-grey">Statistics Summary</h2>
+      </div>
+      <div class="w3-panel" style="overflow-y:scroll;height:calc(100% - 110px);">
+        <div id="loading_statistics" style='display:none'></div>
+        <div id="statistics_contents">
+          <h2>Precision Statistics</h2>
+          <table id='precision_table' class="w3-table-all w3-hoverable">
+            <thead>
+              <tr class="w3-black">
+                <th class="w3-center">학습날짜</th>
+                <th class="w3-center">총 데이터 수</th>
+                <th class="w3-center">Average Precision</th>
+              </tr>
+            </thead>
+            <tr>
+              <td class="w3-center">2020. 05. 26.</td>
+              <td class="w3-center">8000</td>
+              <td class="w3-center">80%</td>
+            </tr>
+          </table>
+          <h2>Label Statistics</h2>
+          <table id='statistics_table' class="w3-table-all w3-hoverable">
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var LABEL_DICT = {{ LABEL_DICT| tojson}};
+    var LABEL_DICT = JSON.parse(LABEL_DICT);
+  </script>
+
+  <script>
+
+    var BODY = document.body, HTML = document.documentElement;
+    var DEVICEHEIGHT = Math.max(BODY.scrollHeight, BODY.offsetHeight, HTML.clientHeight, HTML.scrollHeight, HTML.offsetHeight);
+    var DEVICEWIDTH = Math.max(BODY.scrollWidth, BODY.offsetWidth, HTML.clientWidth, HTML.scrollWidth, HTML.offsetWidth);
+    var image_width = DEVICEWIDTH - 650;
+    var image_height = image_width * 0.526;
+    var image_ratio = 0;
+
+    var FILENAME = '';
+    var GUIDED_FILENAME = '';
+    var DATASET = '{{LISTNAME}}';
+    var TAB_STATUS = 'UNCONFIRM';
+    if ('{{LIST_ARCHIVE}}' == true) {
+      TAB_STATUS = 'ALL';
+    }
+
+    // LOADING ICON
+    function loadingStart() {
+      $('#loading_icon').show(200);
+      $('#main_img').hide(200);
+      $('#main_input').hide(200);
+    }
+
+    function showPage() {
+      $('#loading_icon').hide(200);
+      $('#main_img').show(200);
+      $('#main_input').show(200);
+    }
+
+    // IMAGE LABELER BLOCK
+    var annotator;
+    var annotator_stop;
+    $(document).ready(function () {
+      annotator = new BBoxAnnotator({
+        url: "../static/img/Z0001.jpg",
+        input_method: "select",
+        labels: LABEL_DICT,
+        onchange: function (entries) {
+          if (annotator_stop == false) {
+            var parameter = {};
+            parameter['DATASET'] = DATASET;
+            parameter['ORDER'] = 'SET';
+            parameter['FILENAME'] = FILENAME;
+            parameter['PARAMETER'] = 'BBOX_LABEL';
+            parameter['SETVALUE'] = JSON.stringify(entries);
+            parameter['RATIO'] = image_ratio;
+            sendToServer(parameter);
+            $('#PREDICTION_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+            setTimeout(function () {
+              generatePacket('SET', 'PREDICTION_CHECK', 'NO_PREDICT');
+            }, 300);
+          }
+        },
+        width: DEVICEWIDTH - 650,
+        height: (DEVICEWIDTH - 650) / 1.9
+      });
+
+      $("#Demo1").click(function (e) {
+        annotator.clear_all();
+      })
+    });
+
+    $('#WRITE_BUTTON').click(function () {
+      var parameter = {};
+      parameter['DATASET'] = DATASET;
+      parameter['ORDER'] = 'SET';
+      parameter['FILENAME'] = FILENAME;
+      parameter['PARAMETER'] = 'COMMENT_TEXT';
+      parameter['SETVALUE'] = $('#TEXT_AREA').val();
+      parameter['ID'] = '{{ ID }}';
+      $('#COMMENT_TEXT').html($('#TEXT_AREA').val());
+      sendToServer(parameter);
+    });
+
+    $('#CONFIRM_BUTTON').click(function () {
+      $('#main_img').hide(200);
+      $('#main_input').hide(200);
+      commandLine(FILENAME + ' COMFIRM');
+      generatePacket('SET', 'CONFIRM', true);
+      $('.CURRENT').addClass('CONFIRM');
+      $('.CURRENT').addClass('READ');
+      $('.CURRENT').removeClass('UNCONFIRM');
+      $('.CURRENT').removeClass('CURRENT');
+      openTab(TAB_STATUS);
+      if (TAB_STATUS == 'UNCONFIRM') {
+        if ($('.UNCONFIRM').length != 0) {
+          setTimeout(function () {
+            openImage($('.UNCONFIRM')[0].id + '.jpg');
+          }, 300);
+        }
+        else {
+          window.location.href = "/train";
+        }
+      }
+    });
+
+    $('#DELETE_BUTTON').click(function () {
+      var delete_check = confirm("정말로 삭제하시겠습니까?");
+      if (delete_check == true) {
+        $('#main_img').hide(200);
+        $('#main_input').hide(200);
+        commandLine(FILENAME + ' DELETE');
+        generatePacket('SET', 'DELETE', true);
+        $('.CURRENT').addClass('DELETE');
+        $('.CURRENT').addClass('READ');
+        $('.CURRENT').removeClass('UNCONFIRM');
+        $('.CURRENT').removeClass('CURRENT');
+        openTab(TAB_STATUS);
+      }
+    });
+
+    var count = 0;
+
+    function TRAINING_BUTTON_CONTROL() {
+      var training_check = confirm("TRAINING 하시겠습니까?");
+      if (training_check == true) {
+        generatePacket('START_TRAINING', '', '');
+        window.location.reload();
+      }
+    }
+
+    function PROGRESSING_BUTTON_CONTROL() {
+      generatePacket('TRAINING_STATUS', '', '');
+    }
+
+    if ('{{training_status}}' == 'STOP') {
+      $('#TRAINING_BUTTON').css('display', '');
+      $('#PROGRESSING_BUTTON').css('display', 'none');
+    }
+    else {
+      $('#TRAINING_BUTTON').css('display', 'none');
+      $('#PROGRESSING_BUTTON').css('display', '');
+    }
+
+    function SUMMARY_BUTTON_CONTROL() {
+      document.getElementById('id03').style.display = 'block';
+      $('#loading_statistics').show(200);
+      $('#statistics_contents').hide(200);
+      generatePacket('STATISTICS', '', '');
+    }
+
+    function TMJ_LEFT_BUTTON_CONTROL(signal) {
+      if (signal == 'NORMAL') {
+        $('#TMJ_LEFT_ABNORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+        $('#TMJ_LEFT_NORMAL_BUTTON').attr("class", "w3-button w3-black w3-hover-black w3-padding-small");
+      }
+      if (signal == 'ABNORMAL') {
+        $('#TMJ_LEFT_ABNORMAL_BUTTON').attr("class", "w3-button w3-red w3-hover-red w3-padding-small");
+        $('#TMJ_LEFT_NORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-black w3-padding-small");
+      }
+      if (signal == 'NONE') {
+        $('#TMJ_LEFT_ABNORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+        $('#TMJ_LEFT_NORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-black w3-padding-small");
+      }
+    }
+
+    function TMJ_RIGHT_BUTTON_CONTROL(signal) {
+      if (signal == 'NORMAL') {
+        $('#TMJ_RIGHT_ABNORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+        $('#TMJ_RIGHT_NORMAL_BUTTON').attr("class", "w3-button w3-black w3-hover-black w3-padding-small");
+      }
+      if (signal == 'ABNORMAL') {
+        $('#TMJ_RIGHT_ABNORMAL_BUTTON').attr("class", "w3-button w3-red w3-hover-red w3-padding-small");
+        $('#TMJ_RIGHT_NORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-black w3-padding-small");
+      }
+      if (signal == 'NONE') {
+        $('#TMJ_RIGHT_ABNORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+        $('#TMJ_RIGHT_NORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-black w3-padding-small");
+      }
+    }
+
+    function OSTEOPOROSIS_BUTTON_CONTROL(signal) {
+      if (signal == 'NORMAL') {
+        $('#OSTEOPOROSIS_ABNORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+        $('#OSTEOPOROSIS_NORMAL_BUTTON').attr("class", "w3-button w3-black w3-hover-black w3-padding-small");
+      }
+      if (signal == 'ABNORMAL') {
+        $('#OSTEOPOROSIS_ABNORMAL_BUTTON').attr("class", "w3-button w3-red w3-hover-red w3-padding-small");
+        $('#OSTEOPOROSIS_NORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-black w3-padding-small");
+      }
+      if (signal == 'NONE') {
+        $('#OSTEOPOROSIS_ABNORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+        $('#OSTEOPOROSIS_NORMAL_BUTTON').attr("class", "w3-button w3-grey w3-hover-black w3-padding-small");
+      }
+    }
+
+    function LABEL_ONOFF_CONTROL(signal) {
+      if (signal == 'ON') {
+        $('#labeled_button').attr("class", "w3-button w3-red w3-hover-red w3-padding-small");
+        $('#normal_button').attr("class", "w3-button w3-grey w3-hover-black w3-padding-small");
+        $('#unlabeled_img').css('display', 'none');
+        $('#main_img').css('display', '');
+      }
+      else {
+        $('#labeled_button').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+        $('#normal_button').attr("class", "w3-button w3-black w3-hover-black w3-padding-small");
+        $('#unlabeled_img').css('display', '');
+        $('#main_img').css('display', 'none');
+      }
+    }
+
+    //BUTTON CONTROL BLOCK
+    function BUTTON_CONROL() {
+
+      //PREDICTION RESET BUTTON
+      $('#PREDICTION_BUTTON').click(function () {
+        function execute1() {
+          return new Promise(function (resolve) {
+            loadingStart();
+            $('#PREDICTION_BUTTON').attr("class", "w3-button w3-red w3-hover-red w3-padding-small");
+            resolve(1);
+          })
+        }
+        async function execute() {
+          result = await execute1();
+          generatePacket('PREDICTION', 'FORCE', '');
+        }
+        execute();
+      });
+      $('#RESET_BUTTON').click(function () {
+        annotator.clear_all();
+        $('#PREDICTION_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+        var parameter = {};
+        parameter['DATASET'] = DATASET;
+        parameter['ORDER'] = 'SET';
+        parameter['FILENAME'] = FILENAME;
+        parameter['PARAMETER'] = 'BBOX_LABEL';
+        parameter['SETVALUE'] = JSON.stringify(annotator.entries);
+        parameter['RATIO'] = image_ratio;
+        sendToServer(parameter);
+        setTimeout(function () {
+          generatePacket('SET', 'PREDICTION_CHECK', 'NO_PREDICT');
+        }, 300);
+
+      });
+
+      //BRIGHTNESS CONTROL
+      $('#brightness input').on("input", function () {
+        var img = $('#brightness img');
+        TweenMax.set('#main_img', { '-webkit-filter': 'brightness(' + this.value * 2 + '%' + ')' });
+      });
+
+      //CONTRAST CONTROL
+      $('#contrast input').on("input", function () {
+        var img = $('#contrast img');
+        TweenMax.set('#main_img', { '-webkit-filter': 'contrast(' + this.value * 2 + '%' + ')' });
+      });
+
+      // SET INITIAL BRIGHTNESS CONTRAST
+      $('#brightness input').val(50);
+      $('#brightness input').trigger("mouseover");
+      $('#contrast input').val(50);
+      $('#contrast input').trigger("mouseover");
+    }
+
+    BUTTON_CONROL();
+
+    function openImage(FILENAME_CURRENT) {
+
+      FILENAME = FILENAME_CURRENT;
+
+      annotator_stop = true;
+      $('#main_img').css("width", DEVICEWIDTH + 'px');
+      $('#img3').attr("src", "/database/" + DATASET + "/" + FILENAME);
+      $('#img3').attr("width", (DEVICEWIDTH - 648) + "px");
+      $('.CURRENT').addClass('READ');
+      $('.CURRENT').removeClass('CURRENT');
+      $('.image_frame').css("background-image", "url('" + "/database/" + DATASET + "/" + FILENAME + "')");
+      $('#' + FILENAME.substring(0, FILENAME.length - 4)).addClass('CURRENT');
+      var img = $('#brightness img');
+      $('#brightness input').val(50);
+      $('#contrast input').val(50);
+      TweenMax.set('#main_img', { '-webkit-filter': 'brightness(' + 100 + '%' + ')' });
+      TweenMax.set('#main_img', { '-webkit-filter': 'contrast(' + 100 + '%' + ')' });
+
+      actual_image_width(FILENAME);
+
+      function execute1() {
+        return new Promise(function (resolve) {
+          loadingStart();
+          resolve(1);
+        })
+      }
+      async function execute() {
+        result = await execute1();
+        generatePacket('GET', '', '');
+        commandLine(FILENAME + ' OPEN');
+      }
+      execute();
+    }
+
+    function sendCompleteLabeling() {
+      var parameter = { 'ORDER': 'DB_INFO', 'PARAMETER': 'DB_STATUS', 'SETVALUE': 'COMPLETE', 'DATASET': DATASET };
+      sendToServer(parameter);
+      window.location.href = "/train";
+    }
+
+    function openTab(tabName) {
+      if (tabName == 'CONFIRM') {
+        $('.DELETE').hide();
+        $('.CONFIRM').show();
+        $('.UNCONFIRM').hide();
+        $('#CONFIRM_TAB').addClass('w3-grey');
+        $('#UNCONFIRM_TAB').removeClass('w3-grey');
+        $('#ALL_TAB').removeClass('w3-grey');
+        TAB_STATUS = 'CONFIRM';
+      }
+      if (tabName == 'UNCONFIRM') {
+        $('.DELETE').hide();
+        $('.CONFIRM').hide();
+        $('.UNCONFIRM').show();
+        $('#CONFIRM_TAB').removeClass('w3-grey');
+        $('#UNCONFIRM_TAB').addClass('w3-grey');
+        $('#ALL_TAB').removeClass('w3-grey');
+        TAB_STATUS = 'UNCONFIRM';
+      }
+      if (tabName == 'ALL') {
+        $('.DELETE').show();
+        $('.CONFIRM').show();
+        $('.UNCONFIRM').show();
+        $('#CONFIRM_TAB').removeClass('w3-grey');
+        $('#UNCONFIRM_TAB').removeClass('w3-grey');
+        $('#ALL_TAB').addClass('w3-grey');
+        TAB_STATUS = 'ALL';
+      }
+      //searchFilter();
+    }
+
+    function searchFilter() {
+      input = document.getElementById("mySearch");
+      filter = input.value.toUpperCase();
+      demo_tag = document.getElementById("Demo1");
+
+      if (TAB_STATUS == 'CONFIRM') {
+        div_tag = $('.CONFIRM')
+        for (var i = 0; i < div_tag.length; i++) {
+          if (div_tag[i].id.toUpperCase().indexOf(filter) > -1) {
+            div_tag[i].style.display = "";
+          } else {
+            div_tag[i].style.display = "none";
+          }
+        }
+      }
+      if (TAB_STATUS == 'UNCONFIRM') {
+        div_tag = $('.UNCONFIRM')
+        for (var i = 0; i < div_tag.length; i++) {
+          if (div_tag[i].id.toUpperCase().indexOf(filter) > -1) {
+            div_tag[i].style.display = "";
+          } else {
+            div_tag[i].style.display = "none";
+          }
+        }
+      }
+      if (TAB_STATUS == 'ALL') {
+        div_tag = $('.CONFIRM, .UNCONFIRM')
+        for (var i = 0; i < div_tag.length; i++) {
+          if (div_tag[i].id.toUpperCase().indexOf(filter) > -1) {
+            div_tag[i].style.display = "";
+          } else {
+            div_tag[i].style.display = "none";
+          }
+        }
+      }
+    }
+
+    function actual_image_width(FILENAME) {
+      var dimension, image;
+      image = new Image();
+      image.src = "/database/" + DATASET + "/" + FILENAME;
+      image.onload = function () {
+        dimension = {
+          width: image.naturalWidth,
+          height: image.naturalHeight
+        };
+        if (dimension.width / dimension.height < 1.9) {
+          image_ratio = image_height / dimension.height;
+        }
+        else {
+          image_ratio = image_width / dimension.width;
+        }
+      };
+    }
+
+    function sendToServer(packet) {
+      return new Promise(function (resolve, reject) {
+        $.ajax({
+          dataType: "JSON",
+          url: "/_JSON",
+          contentType: "application/json",
+          data: JSON.stringify(packet),
+          type: 'POST',
+          async: true,
+          success: function (result) {
+            if (packet['ORDER'] == 'GET') {
+              result = JSON.parse(result);
+              if (result['READ'] == false) {
+                generatePacket('PREDICTION', '', '');
+                $('#PREDICTION_BUTTON').attr("class", "w3-button w3-red w3-hover-red w3-padding-small");
+              } else {
+                if (result['PREDICTION_CHECK'] == 'PREDICT') {
+                  $('#PREDICTION_BUTTON').attr("class", "w3-button w3-red w3-hover-red w3-padding-small");
+                }
+                else {
+                  $('#PREDICTION_BUTTON').attr("class", "w3-button w3-grey w3-hover-red w3-padding-small");
+                }
+                setTimeout(function () {
+                  annotator_stop = true;
+                  annotator.clear_all();
+                  if (result['BBOX_LABEL'] == '') {
+                    result['BBOX_LABEL'] = '[]';
+                  }
+                  var labels = JSON.parse(result['BBOX_LABEL']);
+                  labels.forEach(function (each_label) {
+                    var rect = {
+                      left: each_label.left * image_ratio,
+                      top: each_label.top * image_ratio,
+                      width: each_label.width * image_ratio,
+                      height: each_label.height * image_ratio
+                    };
+                    rect.label = each_label.label;
+                    annotator.add_entry(rect);
+                  });
+                  annotator_stop = false;
+                  LABEL_ONOFF_CONTROL('ON');
+                  showPage();
+                }, 100);
+              }
+              if (result['TMJ_LEFT'] == '') {
+                TMJ_LEFT_BUTTON_CONTROL('NONE');
+              } else if (parseInt(result['TMJ_LEFT']) > 0.5) {
+                TMJ_LEFT_BUTTON_CONTROL('ABNORMAL');
+              } else {
+                TMJ_LEFT_BUTTON_CONTROL('NORMAL');
+              }
+              if (result['TMJ_RIGHT'] == '') {
+                TMJ_RIGHT_BUTTON_CONTROL('NONE');
+              } else if (parseInt(result['TMJ_RIGHT']) > 0.5) {
+                TMJ_RIGHT_BUTTON_CONTROL('ABNORMAL');
+              } else {
+                TMJ_RIGHT_BUTTON_CONTROL('NORMAL');
+              }
+              if (result['OSTEOPOROSIS'] == '') {
+                OSTEOPOROSIS_BUTTON_CONTROL('NONE');
+              } else if (parseInt(result['OSTEOPOROSIS']) > 0.5) {
+                OSTEOPOROSIS_BUTTON_CONTROL('ABNORMAL');
+              } else {
+                OSTEOPOROSIS_BUTTON_CONTROL('NORMAL');
+              }
+              if (result['CONFIRM'] == true) {
+                $('#CONFIRM_BUTTON').attr("class", "w3-button w3-black w3-hover-black");
+              } else {
+                $('#CONFIRM_BUTTON').attr("class", "w3-button w3-grey w3-hover-black");
+              }
+              $('#TEXT_AREA').val(result['COMMENT_TEXT']);
+              $('#COMMENT_TEXT').html(result['COMMENT_TEXT']);
+            }
+            if (packet['ORDER'] == 'PREDICTION') {
+              annotator_stop = true;
+              annotator.clear_all();
+              result.forEach(function (each_label) {
+                var rect = {
+                  left: parseInt(each_label.left * image_ratio),
+                  top: parseInt(each_label.top * image_ratio),
+                  width: parseInt(each_label.width * image_ratio),
+                  height: parseInt(each_label.height * image_ratio)
+                };
+                rect.label = each_label.label;
+                annotator.add_entry(rect);
+              });
+              annotator_stop = false;
+              showPage();
+
+              var parameter = {};
+              parameter['DATASET'] = DATASET;
+              parameter['ORDER'] = 'SET';
+              parameter['FILENAME'] = FILENAME;
+              parameter['PARAMETER'] = 'BBOX_LABEL';
+              parameter['SETVALUE'] = JSON.stringify(annotator.entries);
+              parameter['RATIO'] = image_ratio;
+              parameter['ID'] = '{{ID}}';
+
+              async function execute() {
+                result = await sendToServer(parameter);
+                generatePacket('SET', 'PREDICTION_CHECK', 'PREDICT');
+                commandLine(FILENAME + ' OPEN');
+              }
+              execute();
+
+            }
+            if (packet['ORDER'] == 'START_TRAINING') {
+              alert(result);
+            }
+            if (packet['ORDER'] == 'TRAINING_STATUS') {
+              alert(result);
+            }
+            if (packet['ORDER'] == 'STATISTICS') {
+              $('#loading_statistics').hide(200);
+              $('#statistics_contents').show(200);
+              LABEL_RANK = result['LABEL_RANK']
+              $("#statistics_table").html('<thead><tr class="w3-black"><th class="w3-center">LABEL 항목</th><th class="w3-center">LABEL 수</th></tr></thead>');
+              for (var i = 0; i < LABEL_RANK.length; i++) {
+                $("#statistics_table").append('<tr><td class="w3-center">' + LABEL_RANK[i][0] + '</td><td class="w3-center">' + LABEL_RANK[i][1] + '</td></tr>');
+              }
+              PRECISION_DATA = result['PRECISION_DATA']
+              $("#precision_table").html('<thead><tr class="w3-black"><th class="w3-center">학습날짜</th><th class="w3-center">총 데이터 수</th><th class="w3-center">Average Precision</th></tr></thead>');
+              for (var i = 0; i < PRECISION_DATA.length; i++) {
+                $("#precision_table").append('<tr><td class="w3-center">' + PRECISION_DATA[i][0] + '</td><td class="w3-center">' + PRECISION_DATA[i][1] + '</td><td class="w3-center">' + PRECISION_DATA[i][2] + '</td></tr>');
+              }
+            }
+            resolve(1);
+          }
+        });
+      });
+    }
+
+    function generatePacket(ORDER, PARAMETER, SETVALUE) {
+      var parameter = {};
+      parameter['DATASET'] = DATASET;
+      parameter['ORDER'] = ORDER;
+      parameter['FILENAME'] = FILENAME;
+      parameter['PARAMETER'] = PARAMETER;
+      parameter['SETVALUE'] = SETVALUE;
+      parameter['ID'] = "MANAGER";
+      sendToServer(parameter);
+    }
+
+    function SHOW_DATASET() {
+      var x = document.getElementById("DATASET_MENU");
+      var y = document.getElementById("ARCHIVE_MENU");
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      } else {
+        x.className = x.className.replace(" w3-show", "");
+      }
+      if (y.className.indexOf("w3-show")) {
+        y.className = y.className.replace(" w3-show", "");
+      }
+    }
+
+    function SELECT_DATASET(DATASET_NAME) {
+      window.location.href = "/train/" + DATASET_NAME;
+    }
+
+    function SHOW_ARCHIVE() {
+      var x = document.getElementById("ARCHIVE_MENU");
+      var y = document.getElementById("DATASET_MENU");
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      } else {
+        x.className = x.className.replace(" w3-show", "");
+      }
+      if (y.className.indexOf("w3-show")) {
+        y.className = y.className.replace(" w3-show", "");
+      }
+    }
+
+    function SELECT_ARCHIVE(DATASET_NAME) {
+      window.location.href = "/train/" + DATASET_NAME;
+    }
+
+    // Typewriting Function
+    var i = 0;
+    var speed = 20;
+    var start = false;
+    var elmnt = document.getElementById("CMD_WINDOW");
+    var down = 100;
+
+    function typeController(id, count, txt) {
+      if (count < txt.length) {
+        document.getElementById(id).innerHTML += txt.charAt(count);
+        count++;
+        setTimeout(typeController, speed, id, count, txt);
+        down += 10;
+        elmnt.scrollTop = down;
+      }
+    }
+
+    function commandLine(typing) {
+      var para = document.createElement("clx");
+      para.innerHTML = "<p id=CMD_WINDOW" + i + " style='margin:1px;'></p>";
+      document.getElementById("CMD_WINDOW").appendChild(para);
+      typeController("CMD_WINDOW" + i, 0, typing);
+      i++;
+    }
+    commandLine(DATASET + ' OPEN');
+    openTab(TAB_STATUS);
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,316 @@
+body{
+  background-color:#595959;
+}
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+    float:left;border:0px solid red;display:block;
+}
+#main_img{
+  vertical-align:top;display:inline-block;border:0px solid red;top:0px;padding:0px;margin:0px;
+}
+#right_box1{
+  display:inline-block;width:250px;height:100%;color:white;float:right;right:0;position:absolute;top:0px;border:0px solid red;padding:0px;background-color:#475468;
+}
+#right_box2{
+  vertical-align:top; display:inline-block;padding:10px;border:0px solid red;padding-left:20px;padding-top:20px;
+}
+#right_box3{
+  border:0px solid red;display:inline-block;padding:10px;padding-top:20px;
+}
+#right_box4{
+  border:0px solid red;display:inline-block;padding:5px;padding-left:20px;text-align:left;width:100%;
+}
+#right_box5{
+  padding:0px;display:inline-block;border:0px solid red;
+}
+#right_box6{
+  padding:20px;
+}
+#right_box7{
+  background-color:#e8e8e8;width:100%;border:0px solid red;position:relative;display:block;height:27px;
+}
+#insert_btn{
+  font-size:12px;position:relative;display:inline-block;width:100px;margin:3px;background-color:#4286f4;color:white;float:right;border:1px solid #000;text-decoration:none;padding:1px;
+}
+#t_area{
+  width:100%;height:200px;
+}
+#prediction{
+  font-size:19px;padding-top:40px;
+}
+.f_gray{
+  color:#969696
+}
+#myBar{
+  width:20%;height:4px;
+}
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 85%; /* Full-width */
+    height: 5px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 23px;
+  height: 24px;
+  border: 0;
+  background: url('../src/contrasticon.png');
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 23px;
+  height: 25px;
+  border: 0;
+  background: url('../src/contrasticon.png');
+  cursor: pointer;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+/*스위치바탕 ie에서 테두리생김방지*/
+.switch input {display:none;}
+
+.slider_switch {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition:.4s;
+}
+/*스위치버튼 안쪽에 동그란모양*/
+.slider_switch:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background: white;
+  transition: .4s;
+}
+
+/*체크된(on된)스위치바탕*/
+input:checked + .slider_switch {
+  background: #2196F3;
+}
+/*스위치버튼을 클릭하면 버튼주위에 글로우효과*/
+input:focus + .slider_switch {
+  box-shadow: 0 0 3px #2196F3;
+}
+/*스위치버튼을 클릭하면 우측으로 26px이동*/
+input:checked + .slider_switch:before {
+  transform: translateX(26px);
+}
+
+/*Rounded sliders*/
+.slider_switch.round {
+  border-radius: 34px;
+}
+/*스위치버튼 안쪽에 동그란모양*/
+.slider_switch.round:before {
+  border-radius: 50%;
+}
+
+.text_left{
+  text-align:left;
+  left:0px;
+  margin-top:10px;
+}
+.text_right{
+  border:0px solid red;
+  width:100%;
+  text-align:right;
+  right:0px;
+  padding:5px;
+}
+
+
+.tab-wrap * {
+	margin: 0px;
+	padding: 0px;
+}
+.tab-wrap {
+	position: relative;
+	padding-top: 30px;
+}
+.tab-wrap li {
+	z-index: 2;
+	position: absolute;
+	top: 0px;
+	width: 100px;
+	height: 30px;
+	text-indent: -9999%;
+}
+.tab-wrap li:nth-of-type(1) {
+	left: 0px;
+}
+.tab-wrap li:nth-of-type(2) {
+	left: 100px;
+}
+.tab-wrap li a {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.tab-wrap article h1 {
+	position: absolute;
+	top: 0px;
+	width: 100px;
+	height: 30px;
+	line-height: 30px;
+	box-sizing: border-box;
+	border: 1px solid #ddd;
+	text-align: center;
+	font-size: 12px;
+}
+.tab-wrap article p {
+	border: 1px solid #ddd;
+	padding: 30px;
+}
+.tab-wrap article:target h1 {
+	background-color: yellow;
+}
+.tab-wrap article:nth-of-type(1) h1 {
+	left: 0px;
+}
+.tab-wrap article:nth-of-type(2) h1 {
+	left: 100px;
+}
+.tab-wrap article:nth-of-type(1) p {
+	display: block;
+}
+.tab-wrap article p {
+	display: none;
+}
+.tab-wrap article:target p {
+	display: block;
+}
+
+.READ{
+  background-color:#555;
+}
+
+.DELETE{
+  background-color:#ff000033;
+}
+
+.CURRENT{
+  background-color:#45374C;
+}
+
+#mySidebar{
+  z-index:3;width:320px;border:0px solid red;overflow:hidden;background-color:#475468;
+}
+#mySidebar2{
+  padding:0px;border:0px solid red;color:white;
+}
+#cases_box{
+  background-color:#e8e8e8;position:relative;display:block;height:37px;
+}
+#cases_text{
+  padding:6px;display:inline-block;
+}
+#insert_img_btn{
+  position:relative;display:inline-block;margin:4px;background-color:#4286f4;color:white;float:right;border:1px solid #000;text-decoration:none;padding:3px;
+}
+#Demo1{
+  display:inline-block;height:calc(100% - (100px + 200px));width:100%;overflow-y:scroll;border:0px solid red;
+}
+
+::-webkit-scrollbar-track
+{
+ -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+ border-radius: 10px;
+ background-color: #555;
+}
+
+::-webkit-scrollbar
+{
+ width: 6px;
+ background-color: #555;
+}
+
+::-webkit-scrollbar-thumb
+{
+ border-radius: 3px;
+ -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+ background-color: #666;
+}
+
+.img_name{
+  color:white;
+}
+#xray{
+  display:inline-block;border:0px solid red;vertical-align:top;padding:6px;
+}
+#xray_exp{
+  display:inline-block;color:white;border:0px solid red;height:60px;
+}
+.center{
+  text-align:center;
+}
+.below_btn{
+  width:90%;margin:5px;
+}
+#page{
+  border:0px solid red;margin-left:60px;
+}
+#page1{
+  display:inline-block;border:0px solid red;text-align:left;padding:1px;
+}
+.width100{
+  width:100%;
+}
+
+table {width:190px;border-collapse: collapse;border: 0px solid #333333;text-align:center;display:inline-block}
+td {padding: 10px;width:20%;border : 1px solid #cacaca;border-top:1px solid black;border-bottom:1px solid black;}
+.a {border-collapse: separate;}.b {border-collapse: collapse;}
+#btn_x_ray_img{width:100px;background-color:#51abff;color:white}
+#btn_x_ray_img:hover{background-color:#51abff !important;}
+#btn_activation{width:100px;background-color:#cacaca;color:white}
+#btn_activation:hover{background-color:#d60c31 !important;}
+#disable{width:100px;background-color:#cacaca;color:white}
+#disable:hover{width:100px;background-color:#cacaca;color:white !important}
+.btn_normal{width:100px;background-color:#51abff;color:white}
+.btn_abnormal{width:100px;background-color:#d60c31;color:white}
+.gray{width:100px;background-color:#cacaca;color:white}
+.slider{width:90%;background-color:#cacaca;color:white}
