@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block side %}
+
+<!-- Sidebar Menu -->
+<nav class="mt-2">
+  <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+    <!-- Add icons to the links using the .nav-icon class
+       with font-awesome or any other icon font library -->
+
+    <li class="nav-item has-treeview">
+      <a href="/status" class="nav-link">
+        <i class="nav-icon fas fa-chart-pie"></i>
+        <p>
+          데이터 수집 현황
+        </p>
+      </a>
+    </li>
+
+    <li class="nav-item has-treeview">
+      <a href="/model" class="nav-link active">
+        <i class="nav-icon fas fa-chart-pie"></i>
+        <p>
+          학습모델 관리
+        </p>
+      </a>
+    </li>
+
+    <li class="nav-item has-treeview">
+      <a href="/train" class="nav-link">
+        <i class="nav-icon fas fa-chart-pie"></i>
+        <p>
+          데이터 입력하기
+        </p>
+      </a>
+    </li>
+
+  </ul>
+</nav>
+<!-- /.sidebar-menu -->
+
+{% endblock %}
+
+{% block contents %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h4 class="m-0 text-dark">{{Title}}</h1>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-blue"><i class="far fa-clone"></i></span>
+          <div class="info-box-content">
+            <span class="info-box-text">최근 학습일</span>
+            <span class="info-box-number">2020. 10. 04.</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">총 입력 데이터 수</span>
+            <span class="info-box-number">303</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+
+      <!-- fix for small devices only -->
+      <div class="clearfix visible-sm-block"></div>
+
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">CONFIRM 데이터 수</span>
+            <span class="info-box-number">74</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+      <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box">
+          <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+          <div class="info-box-content">
+            <span class="info-box-text">직전 평균 정확도</span>
+            <span class="info-box-number">N/A</span>
+          </div>
+          <!-- /.info-box-content -->
+        </div>
+        <!-- /.info-box -->
+      </div>
+      <!-- /.col -->
+    </div>
+
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="m-0 text-dark">내 학습 관리</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <form name=frm action="#" method=post>
+
+      <table id="example2" class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th style="text-align:center;width:130px;">상황</th>
+            <th class="hide_in_mobile" style="text-align:center;min-width:130px;">학습률</th>
+            <th style="text-align:center;width:130px;">기능</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:center;vertical-align:middle;"><span class="label label-success">TRAINING</span></td>
+            <td class="hide_in_mobile">
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-volumenow="57" aria-volumemin="0"
+                  aria-volumemax="100" style="width: 57%">
+                </div>
+              </div>
+              <small>
+                57% Complete
+              </small>
+            </td>
+            <td style="text-align:center;vertical-align:middle;"><button type="button"
+                class="btn btn-block btn-outline-primary btn-sm">학습하기</button></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!--<input type=submit value=SAVE>-->
+    </form>
+
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h4 class="m-0 text-dark">정확도 현황</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <form name=frm action="#" method=post>
+
+      <table id="example2" class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th style="text-align:center;width:80px;">번호</th>
+            <th style="text-align:center;min-width:130px;">항목</th>
+            <th style="text-align:center;min-width:130px;">데이터 수</th>
+            <th style="text-align:center;min-width:130px;">학습모드</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for LABEL in LABEL_TABLE %}
+          <tr>
+            <td style=text-align:center;>{{loop.index}}</td>
+            <td style=text-align:center;>{{LABEL[0]}}</td>
+            <td style=text-align:center;>{{LABEL[1]}}</td>
+            <td style=text-align:center;>{{'ON' if LABEL[1] > 50 else 'OFF'}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!--<input type=submit value=SAVE>-->
+    </form>
+
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+{% endblock %}

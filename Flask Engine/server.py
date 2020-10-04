@@ -14,6 +14,7 @@ from multiprocessing.pool import ThreadPool
 from datetime import datetime, date, timedelta
 pool = ThreadPool(processes=2)
 
+
 app = Flask(__name__)
 app.secret_key = b'123'
 DEBUG_MODE = True
@@ -141,28 +142,43 @@ def status():
         return redirect(url_for('login'))
     USER = session['ID']
 
+    # Connection
     myclient = pymongo.MongoClient("mongodb://ai:1111@dentiqub.iptime.org:27017/")
     TOOTH_DETECTION = myclient["TOOTH_DETECTION"]
-    hospitaldata = TOOTH_DETECTION["hospitaldata"]
-    hospitals = []
+    imageDB = TOOTH_DETECTION["imageDB"]
 
-    today = date.today()
-    yesterday = today - timedelta(days=1)
-    print(yesterday)
+    # 레이블 데이터 불러오기
+    import collections
 
-    for hospital in hospitaldata.find({}).sort("NAME",pymongo.ASCENDING):
-        hospital['WEEKLYIMAGES'] = 0
-        for i in range(7):
-            searchday = str(today - timedelta(days=i))
-            if(searchday in hospital) : hospital['WEEKLYIMAGES'] += hospital[searchday]
-        hospital['DAILYIMAGES'] = 0 if not str(today) in hospital else hospital[str(today)]
-        if not "최근접속일" in hospital:
-            hospital['최근접속일'] = 'NONE'
-        if not "최근전송일" in hospital:
-            hospital['최근전송일'] = 'NONE'
-        hospitals.append(hospital)
+    LABEL_LIST = []
 
-    return render_template('status.html', USER=USER, Title = '데이터 수집 현황')
+    for image in imageDB.find({'CONFIRM':True}):
+        if ('BBOX_LABEL' in image):
+            if((image['BBOX_LABEL']) == ''):
+                image['BBOX_LABEL'] = '[]'
+            BBOX_LABEL = json.loads(image['BBOX_LABEL'])
+            for j in range(len(BBOX_LABEL)):
+                class_name = str(BBOX_LABEL[j]['label'])
+                LABEL_LIST.append(class_name)
+
+    LABEL_COUNTER = collections.Counter(LABEL_LIST)
+    LABEL_TABLE = []
+
+    # 값으로 정렬
+    for key, value in sorted(LABEL_COUNTER.items(), key=lambda item: item[0], reverse = False):
+        LABEL_TABLE.append((key, value))
+
+    print(LABEL_TABLE)
+
+    return render_template('status.html', USER=USER, Title = '데이터 수집 현황', LABEL_TABLE=LABEL_TABLE)
+
+@app.route("/model", methods=['GET', 'POST'])
+def model():
+    if not session.get('ID'):
+        return redirect(url_for('login'))
+    USER = session['ID']
+
+    return render_template('model.html', USER=USER, Title = '학습 모델 관리')
 
 
 @app.route("/_JSON", methods=['GET', 'POST'])
